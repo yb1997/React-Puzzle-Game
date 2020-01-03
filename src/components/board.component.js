@@ -3,6 +3,7 @@ import { v4 } from "uuid";
 import { Tile } from "./tile.component";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
+import { SWAP_TILES } from "../store/constants";
 
 const StyledBoard = styled.div`
   background-color: white;
@@ -18,7 +19,7 @@ const useSwapDispatcher = () => {
 
   useEffect(() => {
     if (selectedTiles.length === 2) {
-      dispatch({ type: "swap" });
+      dispatch({ type: SWAP_TILES });
     }
   }, [selectedTiles, dispatch]);
 };
@@ -36,6 +37,29 @@ export const Board = () => {
     image.height
   ]);
 
+  const randomPositions = useMemo(() => {
+    const alreadyAssignedPositions = {};
+    const randomPositions = {};
+
+    for (let j = 0; j < numOfRows; j++) {
+      for (let i = 0; i < numOfColumns; i++) {
+        let foundUniquePosition = false;
+
+        while (!foundUniquePosition) {
+          const randomX = Math.floor(Math.random() * numOfColumns);
+          const randomY = Math.floor(Math.random() * numOfRows);
+
+          if (!alreadyAssignedPositions[`${randomX}${randomY}`]) {
+            randomPositions[`${i}${j}`] = [randomX, randomY];
+            foundUniquePosition = true;
+            alreadyAssignedPositions[`${randomX}${randomY}`] = true;
+          }
+        }
+      }
+    }
+    return randomPositions;
+  }, [numOfColumns, numOfRows]);
+
   const tiles = useMemo(() => {
     let tiles = [];
 
@@ -43,7 +67,17 @@ export const Board = () => {
       const columns = [];
 
       for (let i = 0; i < numOfColumns; i++) {
-        columns.push(<Tile key={v4()} imageUrl={imageUrl} x={i} y={j} />);
+        const [randomX, randomY] = randomPositions[`${i}${j}`];
+        columns.push(
+          <Tile
+            key={v4()}
+            imageUrl={imageUrl}
+            x={i}
+            y={j}
+            randomX={randomX}
+            randomY={randomY}
+          />
+        );
       }
 
       tiles.push(
@@ -52,8 +86,9 @@ export const Board = () => {
         </div>
       );
     }
+
     return tiles;
-  }, [imageUrl, numOfColumns, numOfRows]);
+  }, [imageUrl, numOfColumns, numOfRows, randomPositions]);
 
   return (
     <StyledBoard width={imageWidth} height={imageHeight}>

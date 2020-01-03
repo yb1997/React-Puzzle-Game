@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
+import { SELECT_TILE, UNSELECT_TILE, UPDATE_TILE_STATUS, RESET_SWAP } from "../store/constants";
 
 const wobble = keyframes`
   0% {
@@ -41,7 +42,7 @@ const Container = styled.div`
   }
 `;
 
-export const Tile = ({ x: originalX, y: originalY }) => {
+export const Tile = ({ x: originalX, y: originalY, randomX, randomY }) => {
   const [isClicked, setIsClicked] = useState(false);
   const {
     rows,
@@ -58,11 +59,11 @@ export const Tile = ({ x: originalX, y: originalY }) => {
 
   const selectedTiles = useSelector(({ game }) => game.tiles);
 
-  const [x, setX] = useState(originalX);
-  const [y, setY] = useState(originalY);
+  const [x, setX] = useState(randomX);
+  const [y, setY] = useState(randomY);
 
-  const [xPos] = useState(Math.floor(x * (100 / (rows - 1))));
-  const [yPos] = useState(Math.floor(y * (100 / (columns - 1))));
+  const [xPos] = useState(Math.floor(originalX * (100 / (rows - 1))));
+  const [yPos] = useState(Math.floor(originalY * (100 / (columns - 1))));
 
   const [width] = useState(imageWidth / rows);
   const [height] = useState(imageHeight / columns);
@@ -74,16 +75,16 @@ export const Tile = ({ x: originalX, y: originalY }) => {
 
   useEffect(() => {
     if (isClicked) {
-      dispatch({ type: "selectTile", payload: [x, y] });
+      dispatch({ type: SELECT_TILE, payload: [x, y] });
     } else {
-      dispatch({ type: "unselectTile", payload: [x, y] });
+      dispatch({ type: UNSELECT_TILE, payload: [x, y] });
     }
   }, [isClicked, dispatch, x, y]);
 
   useEffect(() => {
     const amIInRightPlace = originalX === x && originalY === y;
     dispatch({
-      type: "UPDATE_TILE_STATUS",
+      type: UPDATE_TILE_STATUS,
       payload: { id: `${originalX}${originalY}`, status: amIInRightPlace }
     });
   }, [originalX, originalY, x, y, dispatch]);
@@ -100,7 +101,7 @@ export const Tile = ({ x: originalX, y: originalY }) => {
       setX(newX);
       setY(newY);
       setIsClicked(false);
-      dispatch({ type: "resetSwap" });
+      dispatch({ type: RESET_SWAP });
     }
   }, [selectedTiles, swap, height, width, x, y, dispatch]);
 
@@ -111,13 +112,11 @@ export const Tile = ({ x: originalX, y: originalY }) => {
         onClick={e => setIsClicked(!isClicked)}
         left={left}
         top={top}
-        {...{
-          width,
-          height,
-          xPos,
-          yPos,
-          imageUrl: url
-        }}
+        width={width}
+        height={height}
+        xPos={xPos}
+        yPos={yPos}
+        imageUrl={url}
       />
     </>
   );

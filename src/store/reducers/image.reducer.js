@@ -1,3 +1,5 @@
+import { SET_IMAGE_URL, SET_IMAGE_DIMENSION } from "../constants";
+
 const dimension = { width: 500, height: 500 };
 
 const defaultState = {
@@ -7,10 +9,10 @@ const defaultState = {
 
 const imageReducer = (state = defaultState, action) => {
   switch (action.type) {
-    case "setDimension":
+    case SET_IMAGE_DIMENSION:
       const { width, height } = action.payload;
       return { ...state, width, height };
-    case "setUrl":
+    case SET_IMAGE_URL:
       const url = action.payload;
       return { ...state, url };
     default:

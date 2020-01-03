@@ -1,3 +1,11 @@
+import {
+  SWAP_TILES,
+  RESET_SWAP,
+  SELECT_TILE,
+  UNSELECT_TILE,
+  UPDATE_TILE_STATUS
+} from "../constants";
+
 const defaultState = {
   swap: false,
   tiles: [],
@@ -6,16 +14,16 @@ const defaultState = {
 
 const gameReducer = (state = defaultState, action) => {
   switch (action.type) {
-    case "swap":
+    case SWAP_TILES:
       return { ...state, swap: true };
 
-    case "resetSwap":
+    case RESET_SWAP:
       return { ...state, swap: false, tiles: [] };
 
-    case "selectTile":
+    case SELECT_TILE:
       return { ...state, tiles: [...state.tiles, action.payload] };
 
-    case "unselectTile":
+    case UNSELECT_TILE:
       const coords = action.payload;
       return {
         ...state,
@@ -24,7 +32,7 @@ const gameReducer = (state = defaultState, action) => {
         )
       };
 
-    case "UPDATE_TILE_STATUS":
+    case UPDATE_TILE_STATUS:
       return {
         ...state,
         tilesStatus: {

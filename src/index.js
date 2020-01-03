@@ -1,60 +1,39 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
-import { Provider, useSelector } from "react-redux";
+import { Provider } from "react-redux";
 
-import { Board } from "./components/board.component";
+import { MemoryRouter as Router, Route, Switch } from "react-router-dom";
+
+import { MainMenuScreen } from "./screens/main-menu.screen";
+import { GameScreen } from "./screens/game.screen";
+import { DifficultyLevelScreen } from "./screens/difficulty-level.screen";
 
 import "./styles.css";
 import store from "./store";
-import styled from "styled-components";
-
-const useTilesPositionStatus = () => {
-  const [areTilesInPosition, setAreTilesInPosition] = useState(false);
-  const tilesStatus = useSelector(({ game }) => game.tilesStatus);
-
-  useEffect(() => {
-    const areInPosition = Object.values(tilesStatus).every(
-      status => status === true
-    );
-    setAreTilesInPosition(areInPosition);
-  }, [tilesStatus]);
-
-  return areTilesInPosition;
-};
-
-const PositiveStatus = styled.h1`
-  background-color: #4caf50;
-  color: white;
-  padding: 0.5em;
-`;
-
-const NegativeStatus = styled.h1`
-  background-color: #cc3e44;
-  color: white;
-  padding: 0.5em;
-`;
+import { ModeSelectScreen } from "./screens/mode-select.screen";
 
 function App() {
-  const areTilesInPosition = useTilesPositionStatus();
-
   return (
     <div className="App">
-      <Board />
-      {areTilesInPosition ? (
-        <PositiveStatus>
-          All Tiles are in Position{" "}
-          <span role="img" aria-label="happy">
-            😀
-          </span>
-        </PositiveStatus>
-      ) : (
-        <NegativeStatus>
-          Tiles are not in position{" "}
-          <span role="img" aria-label="sad">
-            😪
-          </span>
-        </NegativeStatus>
-      )}
+      <Router>
+        <Switch>
+          <Route path="/game">
+            <GameScreen />
+          </Route>
+
+          <Route path="/difficulty-level">
+            <DifficultyLevelScreen />
+          </Route>
+
+          <Route path="/mode-select">
+            <ModeSelectScreen />
+          </Route>
+
+          <Route path="/">
+            <MainMenuScreen />
+          </Route>
+        </Switch>
+      </Router>
     </div>
   );
 }
