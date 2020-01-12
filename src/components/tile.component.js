@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { SELECT_TILE, UNSELECT_TILE, UPDATE_TILE_STATUS, RESET_SWAP } from "../store/constants";
+import {
+  SELECT_TILE,
+  UNSELECT_TILE,
+  UPDATE_TILE_STATUS,
+  RESET_SWAP
+} from "../store/constants";
 
 const wobble = keyframes`
   0% {
@@ -18,7 +23,7 @@ const wobble = keyframes`
   }
 `;
 
-const Container = styled.div`
+const Container = styled.button`
   display: inline-block;
   height: ${({ height }) => height}px;
   width: ${({ width }) => width}px;
@@ -40,6 +45,10 @@ const Container = styled.div`
     z-index: 2;
     animation: ${wobble} 1s infinite;
   }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
 `;
 
 export const Tile = ({ x: originalX, y: originalY, randomX, randomY }) => {
@@ -58,6 +67,7 @@ export const Tile = ({ x: originalX, y: originalY, randomX, randomY }) => {
   }));
 
   const selectedTiles = useSelector(({ game }) => game.tiles);
+  const isGamePlaying = useSelector(({ game }) => game.isPlaying);
 
   const [x, setX] = useState(randomX);
   const [y, setY] = useState(randomY);
@@ -83,6 +93,7 @@ export const Tile = ({ x: originalX, y: originalY, randomX, randomY }) => {
 
   useEffect(() => {
     const amIInRightPlace = originalX === x && originalY === y;
+
     dispatch({
       type: UPDATE_TILE_STATUS,
       payload: { id: `${originalX}${originalY}`, status: amIInRightPlace }
@@ -117,6 +128,7 @@ export const Tile = ({ x: originalX, y: originalY, randomX, randomY }) => {
         xPos={xPos}
         yPos={yPos}
         imageUrl={url}
+        disabled={!isGamePlaying}
       />
     </>
   );
